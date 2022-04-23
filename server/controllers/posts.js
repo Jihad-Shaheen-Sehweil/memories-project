@@ -12,12 +12,16 @@ export const getPosts = async (req, res) => {
 };
 export const createPost = async (req, res) => {
     const post = req.body;
-    const newPost = new PostMessage(post);
+    const newPostMessage = new PostMessage({
+        ...post,
+        creator: req.userId,
+        createdAt: new Date().toISOString(),
+    });
 
     try {
-        await newPost.save();
+        await newPostMessage.save();
 
-        return res.status(201).json(newPost);
+        return res.status(201).json(newPostMessage);
     } catch (error) {
         return res.status(409).json({ message: error.message });
     }
@@ -44,7 +48,7 @@ export const deletePost = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id))
         return res.status(404).send("No post with that id");
 
-    await PostMessage.findByIdAndDelete(id);
+    await PostMessage.findOneAndRemove(id);
     return res.json({ message: "Post deleted successfuly" });
 };
 

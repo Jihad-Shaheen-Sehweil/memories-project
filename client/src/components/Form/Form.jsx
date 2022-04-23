@@ -13,12 +13,12 @@ function Form({ currentId, setCurrentId }) {
         currentId ? state.posts.find((post) => post._id === currentId) : null
     );
     const [postData, setPostData] = useState({
-        creator: "",
         title: "",
         message: "",
         tags: "",
         selectedFile: "",
     });
+    const user = JSON.parse(localStorage.getItem("profile"));
 
     useEffect(() => {
         if (post) setPostData(post);
@@ -28,9 +28,12 @@ function Form({ currentId, setCurrentId }) {
         e.preventDefault();
 
         if (currentId) {
-            dispatch(updatePost(currentId, postData));
+            //the above - i still dont know why
+            dispatch(
+                updatePost(currentId, { ...postData, name: user?.result?.name })
+            );
         } else {
-            dispatch(createPost(postData));
+            dispatch(createPost({ ...postData, name: user?.result?.name }));
         }
         handleClear();
     };
@@ -38,13 +41,23 @@ function Form({ currentId, setCurrentId }) {
     const handleClear = () => {
         setCurrentId(null);
         setPostData({
-            creator: "",
             title: "",
             message: "",
             tags: "",
             selectedFile: "",
         });
     };
+
+    if (!user?.result?.name) {
+        return (
+            <Paper className={classes.paper}>
+                <Typography variant="h6" align="center">
+                    Please Sign In to create your own memories and like other's
+                    memories
+                </Typography>
+            </Paper>
+        );
+    }
 
     return (
         <Paper className={classes.paper}>
@@ -57,16 +70,6 @@ function Form({ currentId, setCurrentId }) {
                 <Typography variant="h6">
                     {currentId ? "Editing" : "Creating"} Memory
                 </Typography>
-                <TextField
-                    name="creator"
-                    variant="outlined"
-                    label="Creator"
-                    fullWidth
-                    value={postData.creator}
-                    onChange={(e) =>
-                        setPostData({ ...postData, creator: e.target.value })
-                    }
-                />
                 <TextField
                     name="title"
                     variant="outlined"
