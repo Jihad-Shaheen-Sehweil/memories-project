@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import ChipInput from "material-ui-chip-input";
 
-import { getPosts } from "../../actions/posts";
+import { getPostsBySearch } from "../../actions/posts";
 import useStyles from "./styles";
 import Posts from "../Posts/Posts";
 import Form from "../Form/Form";
@@ -33,10 +33,6 @@ function Home() {
     const [search, setSearch] = useState("");
     const [tags, setTags] = useState([]);
 
-    useEffect(() => {
-        dispatch(getPosts());
-    }, [currentId, dispatch]);
-
     const handlekeyPress = (e) => {
         if (e.keyCode === 13) {
             searchPost();
@@ -49,8 +45,13 @@ function Home() {
         setTags(tags.filter((tag) => tag !== tagToDelete));
 
     const searchPost = () => {
-        if (search.trim()) {
-            // dispatch -> fetch search posts
+        if (search.trim() || tags) {
+            dispatch(getPostsBySearch({ search, tags: tags.join(",") }));
+            history.push(
+                `/posts/search?searchQuery=?${
+                    search || "none"
+                }&tags=${tags.join(",")}`
+            );
         } else {
             history.push("/");
         }
@@ -106,7 +107,7 @@ function Home() {
                             setCurrentId={setCurrentId}
                         />
                         <Paper className={classes.pagination} elevation={6}>
-                            <Pagination />
+                            <Pagination page={page} />
                         </Paper>
                     </Grid>
                 </Grid>
