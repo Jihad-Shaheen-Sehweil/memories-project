@@ -13,10 +13,10 @@ function Paginate({ page }) {
 
     useEffect(() => {
         if (page) dispatch(getPosts(page));
-    }, [page]);
+    }, [page, dispatch]);
     return (
         <Pagination
-            className={classes.ul}
+            classes={{ ul: classes.ul }}
             count={numberOfPages}
             page={Number(page) || 1}
             variant="outlined"
@@ -25,7 +25,7 @@ function Paginate({ page }) {
                 <PaginationItem
                     {...item}
                     component={Link}
-                    to={`/posts?pages=${item.page}`}
+                    to={`/posts?page=${item.page}`}
                 />
             )}
         />

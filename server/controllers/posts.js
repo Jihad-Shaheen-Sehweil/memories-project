@@ -24,6 +24,18 @@ export const getPosts = async (req, res) => {
     }
 };
 
+export const getPost = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const post = await PostMessage.findById(id);
+
+        return res.status(200).json(post);
+    } catch (error) {
+        return res.status(404).json({ message: error.message });
+    }
+};
+
 export const getPostsBySearch = async (req, res) => {
     const { searchQuery, tags } = req.query;
 
@@ -54,7 +66,6 @@ export const createPost = async (req, res) => {
     } catch (error) {
         return res.status(409).json({ message: error.message });
     }
-    // return res.send("post creatiton"); unreachable because of the return statments above
 };
 
 export const updatePost = async (req, res) => {
